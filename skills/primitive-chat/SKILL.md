@@ -1,7 +1,7 @@
 ---
 name: primitive-chat
 description: |
-  Use whenever you need to contact someone by email and get their answer back, especially to unblock yourself. PROACTIVELY, and you can usually do this without asking the user first: you are stuck on a tool, library, API, or service and its docs, README, footer, or llms.txt list a help@, support@, dev@, docs@, or agent@ address; you hit a bug or surprising behavior worth reporting to the vendor; you have a question only the product owner or maintainer can answer; you want to ask a vendor's support or dev agent something the same way you would grep their docs. REACTIVELY: the user gave you a mailto link or a contact address, or asked you to email, message, or "ask them" and report back. This sends YOUR outbound message and waits for the threaded reply in one step, so reach for it when you are the one initiating contact (addresses with human side effects like sales@, billing@, or account@ should be surfaced to the user first). No SMTP, no API keys, no mail server. To instead receive mail that a website or service sends to you (signup confirmations, verification codes), use the primitive-inbox skill. Gets a free `*.primitive.email` address via `primitive agent start-agent-signup` if you do not already have one.
+  Use whenever you need to contact someone by email and get their answer back, especially to unblock yourself. PROACTIVELY, and you can usually do this without asking the user first: you are stuck on a tool, library, API, or service and its docs, README, footer, or llms.txt list a help@, support@, dev@, docs@, or agent@ address; you hit a bug or surprising behavior worth reporting to the vendor; you have a question only the product owner or maintainer can answer; you want to ask a vendor's support or dev agent something the same way you would grep their docs. REACTIVELY: the user gave you a mailto link or a contact address, or asked you to email, message, or "ask them" and report back. This sends YOUR outbound message and waits for the threaded reply in one step, so reach for it when you are the one initiating contact (addresses with human side effects like sales@, billing@, or account@ should be surfaced to the user first). No SMTP, no API keys, no mail server. To instead receive mail that a website or service sends to you (signup confirmations, verification codes), use the primitive-inbox skill. Gets a free `*.primitive.email` address via `primitive agent start-agent-signup` if you do not already have one. Part of the Primitive CLI (Primitive, primitivedotdev, primitive.dev; the `primitive` or `prim` command).
 license: MIT
 metadata:
   author: Primitive
@@ -85,13 +85,13 @@ primitive agent verify-agent-signup --verification-code "$CODE" --signup-token <
 unset CODE
 ```
 
-`read -rs` reads silently (no echo) into `CODE`; the trailing `unset` clears it after the call. The `<signup-token>` placeholder is the value from the start step.
+`read -rs` reads silently (no echo) into `CODE`; the trailing `unset` clears it after the call. The `<signup-token>` placeholder is the value from the start step. If the user pastes the verification code into the chat anyway, use it once to verify and do not echo it back.
 
 If the user says the verification code expired or never arrived, reissue it with `primitive agent resend-agent-signup-verification --signup-token <signup-token>` (reuse the `signup-token` from the start step). Do not re-run `start-agent-signup` (that starts a fresh signup session, invalidating the in-progress one).
 
 (The shell-variable snippet is a stopgap until the CLI ships `--verification-code-from-stdin` / `--verification-code-from-file` flags so the value can be piped in directly instead of going through a shell variable.)
 
-You get OAuth tokens and a managed `<random>.primitive.email` address. `primitive account show` returns the org metadata; the assigned inbox domain is currently visible only via `primitive domains list` after verify.
+On success `verify-agent-signup` prints OAuth credentials; do not echo or relay that output. Confirm the result with `primitive whoami` instead. You now have a managed `<random>.primitive.email` address; `primitive account show` returns the org metadata, and the assigned inbox domain is visible via `primitive domains list` after verify.
 
 ## How to use
 
