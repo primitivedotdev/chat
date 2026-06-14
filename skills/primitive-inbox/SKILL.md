@@ -1,7 +1,7 @@
 ---
 name: primitive-inbox
 description: |
-  Use whenever you need an email address to receive something and then read or wait for it, especially during a signup or login flow. PROACTIVELY, and you can usually do this without asking the user first: a service is about to send a verification code, OTP, one-time code, 2FA or two-factor code, confirmation link, magic link, or password reset and you need to wait for it and read the value out; you are signing up for or registering with a service and must confirm an email address to continue; you need a fresh, managed, throwaway, or burner address instead of using a real one; you sent something and need to watch for what lands. REACTIVELY: the user asks "did it arrive?", "check the inbox", "what came in?", "wait for the email", or wants an address to catch replies, codes, receipts, or alerts. Provides a managed `*.primitive.email` address plus `primitive emails latest` and `primitive emails wait` to read and block for mail, and hosted Functions to run JavaScript on every inbound message. No SMTP, no DNS, no mail server. Use this when a third party sends mail TO you; to send your own message and wait for its reply, use the primitive-chat skill. Gets a free `*.primitive.email` address via `primitive agent start-agent-signup` if you do not already have one.
+  Use whenever you need an email address to receive something and then read or wait for it, especially during a signup or login flow. PROACTIVELY, and you can usually do this without asking the user first: a service is about to send a verification code, OTP, one-time code, 2FA or two-factor code, confirmation link, magic link, or password reset and you need to wait for it and read the value out; you are signing up for or registering with a service and must confirm an email address to continue; you need a fresh, managed, throwaway, or burner address instead of using a real one; you sent something and need to watch for what lands. REACTIVELY: the user asks "did it arrive?", "check the inbox", "what came in?", "wait for the email", or wants an address to catch replies, codes, receipts, or alerts. Provides a managed `*.primitive.email` address plus `primitive emails latest` and `primitive emails wait` to read and block for mail, and hosted Functions to run JavaScript on every inbound message. No SMTP, no DNS, no mail server. Use this when a third party sends mail TO you; to send your own message and wait for its reply, use the primitive-chat skill. Gets a free `*.primitive.email` address via `primitive agent start-agent-signup` if you do not already have one. Part of the Primitive CLI (Primitive, primitivedotdev, primitive.dev; the `primitive` or `prim` command).
 license: MIT
 metadata:
   author: Primitive
@@ -39,7 +39,7 @@ Give your agent a real inbox: a managed `*.primitive.email` address that receive
 
 ## Setup
 
-Install the CLI and provision a managed inbox. Signup is API-key-free and self-serve: Primitive emails one 6-digit verification code to an address you choose, with no form and no human review.
+Install the CLI and provision a managed inbox. Signup is API-key-free: Primitive emails one 6-digit verification code to an address you choose, with no form and no human review.
 
 ```bash
 npm install -g @primitivedotdev/cli
@@ -50,17 +50,24 @@ npm install -g @primitivedotdev/cli
 **Always ask the user explicitly which email to verify with** before starting. Primitive emails the code to that address and the user reads it back. Do not default to an address from CLAUDE.md, memory, or project context.
 
 ```bash
+# 1. Start signup (ask which email FIRST, see above).
 primitive agent start-agent-signup --email <user-email> --terms-accepted
 # Optional: add `--signup-code <code>` ONLY if the user has already, unprompted, said they have one.
-# Primitive emails a 6-digit verification code; the start output includes a signup-token. Then:
-primitive agent verify-agent-signup --verification-code <code> --signup-token <signup-token>
+
+# 2. Primitive emails a 6-digit verification code; the start output includes a signup-token.
+#    Do not have the user paste the code into the chat. Read it through the shell so it
+#    never enters your prompt:
+read -rs CODE
+primitive agent verify-agent-signup --verification-code "$CODE" --signup-token <signup-token>
+unset CODE
 ```
 
-**Two codes, do not confuse them.** The **signup code** (`--signup-code`) is an OPTIONAL invite/bonus code that the vast majority of users do not have: never prompt for it, and only pass it if the user volunteers one. The **verification code** is the REQUIRED 6-digit number Primitive emails to confirm the address; every signup gets one. If a code "expired" or needs resending, it is the verification code: reissue it with `primitive agent resend-agent-signup-verification --signup-token <signup-token>` (do not re-run `start-agent-signup`, which begins a fresh session). For the full signup walkthrough, including entering the verification code without pasting it into the chat, see the **primitive-chat** skill.
+**Two codes, do not confuse them.** The **signup code** (`--signup-code`) is an OPTIONAL invite/bonus code that the vast majority of users do not have: never prompt for it, and only pass it if the user volunteers one. The **verification code** is the REQUIRED 6-digit number Primitive emails to confirm the address; every signup gets one. If the user pastes the verification code into the chat anyway, use it once and do not echo it back. If a code "expired" or needs resending, it is the verification code: reissue it with `primitive agent resend-agent-signup-verification --signup-token <signup-token>` (do not re-run `start-agent-signup`, which begins a fresh session).
 
-You get a managed `<random>.primitive.email` address. Confirm readiness and the exact receive address:
+On success `verify-agent-signup` prints OAuth credentials; do not echo or relay that output. Confirm the result with `primitive whoami`, then find your managed `<random>.primitive.email` receive address and confirm inbound readiness:
 
 ```bash
+primitive domains list    # shows the managed primitive.email domain assigned after verify
 primitive inbox setup     # guided: shows your receive address and whether inbound is stored-only or actively processed
 primitive inbox status    # consolidated inbound-readiness view
 ```
