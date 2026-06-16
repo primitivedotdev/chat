@@ -1,6 +1,6 @@
 # Primitive skills
 
-Coding-agent skills for [Primitive](https://primitive.dev) email. They teach Claude Code, Codex CLI, Cursor, Gemini CLI, GitHub Copilot, OpenCode, Amp, and other compatible agents to send mail and get the reply, and to receive mail at a real managed address, all from the terminal with no SMTP, no DNS, and no API keys.
+Coding-agent skills for [Primitive](https://primitive.dev) email. They teach Claude Code, Codex, Cursor, and 50+ other compatible agents to send mail and get the reply, and to receive mail at a real managed address, all from the terminal with no SMTP, no DNS, and no API keys.
 
 ## Install
 
